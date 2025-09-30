@@ -87,4 +87,4 @@ jobs:
           EOF
       
       - name: Destroy tf infrastructure
-        run: cd server && terraform destroy --auto-approve
+        run: cd server && terraform destroy --auto-approve -var="public_key=${SSH_PUBLIC_KEY}"
