@@ -10,8 +10,13 @@ resource "aws_instance" "my_server" {
   depends_on      = [aws_key_pair.ec2_instance]
 }
 
+output "ec2_public_ip" {
+  value = aws_instance.my_server.public_ip
+}
+
+
 resource "aws_security_group" "ssh" {
-  name        = "allow_ssh"
+  name        = "allow-ssh"
   description = "Allow SSH inbound traffic"
   vpc_id      = "vpc-0bf481b36918b11c2"
 
@@ -32,7 +37,7 @@ resource "aws_security_group" "ssh" {
 }
 
 resource "aws_security_group" "http" {
-  name        = "allow_http"
+  name        = "allow-http"
   description = "Allow http inbound traffic and all outbound traffic"
   vpc_id      = "vpc-0bf481b36918b11c2"
 
@@ -57,7 +62,7 @@ resource "aws_security_group" "http" {
 }
 
 resource "aws_security_group" "custom" {
-  name        = "allow_custom"
+  name        = "allow-custom"
   description = "Allow custom inbound traffic and all outbound traffic"
   vpc_id      = "vpc-0bf481b36918b11c2"
 
