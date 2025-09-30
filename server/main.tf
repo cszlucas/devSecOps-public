@@ -2,7 +2,7 @@ resource "aws_instance" "my_server" {
   ami           = "ami-020cba7c55df1f615"
   instance_type = "t2.micro"
 
-  key_name = "ec2_instance"
+  key_name = "ec2-instance"
   tags = {
     Name = "ec2_server"
   }
