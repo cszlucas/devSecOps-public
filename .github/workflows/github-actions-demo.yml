@@ -54,13 +54,34 @@ jobs:
           chmod 600 ~/.ssh/ec2_key.pem
           ssh-keyscan -H ${{ steps.create-server.outputs.ec2_ip }} >> ~/.ssh/known_hosts
 
-      - name: SSH into EC2 and run image and view website through curl before runner ends.
+      - name: SSH into EC2, install docker, and run image and view website through curl before runner ends.
         run: |
           ssh -i ~/.ssh/ec2_key.pem ubuntu@${{ steps.create-server.outputs.ec2_ip }} << 'EOF'
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+          sudo apt-get update
+          sudo apt-get install -y \
+          ca-certificates \
+          curl \
+          gnupg \
+          lsb-release
+
+          sudo mkdir -p /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+          sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+          echo \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+            https://download.docker.com/linux/ubuntu \
+            $(lsb_release -cs) stable" | \
+            sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+            echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             echo "You passed log in!"
-            docker pull zoelucas/hello-app:${{ github.sha }}
-            docker run -d -p 80:80 zoelucas/hello-app:${{ github.sha }}
+            sudo docker pull zoelucas/hello-app:${{ github.sha }}
+            sudo docker run -d -p 80:80 zoelucas/hello-app:${{ github.sha }}
             sleep 5
             curl http://localhost:80
           EOF
