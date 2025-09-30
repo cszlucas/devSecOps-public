@@ -1,0 +1,12 @@
+name: First GitHub Actions Pipeline
+run-name: ${{ github.actor }} is testing GitHub actions!
+on: [push]
+jobs:
+  Test flow:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "The job was triggered by ${{github.event_name}} and is running on a ${{ runner.os }} server hosted by GitHub, a GitHub runner"
+    - run: echo "The name of your repo is ${{ github.repository }}."
+    - name: Check out repo code
+      uses: actions/checkout@v4
+      
